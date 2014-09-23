@@ -31,7 +31,10 @@ def controle():
 		except Exception:
 			print "Error";
 	servo.stop();
+	p22.close();
 controle();
+
+
 
 
 

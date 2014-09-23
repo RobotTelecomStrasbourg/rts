@@ -27,6 +27,8 @@ class Port:
 			GPIO.output(self._nump, v);
 		else:
 			print "Error :  Bad value";
+	def close(self):
+		GPIO.cleanup(self._nump);
 
 
 
