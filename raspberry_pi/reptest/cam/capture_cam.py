@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
+'''
+@author: KILIAN HETT
+'''
+
 from __future__ import print_function
 
 import numpy
