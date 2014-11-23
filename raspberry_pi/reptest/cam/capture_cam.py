@@ -1,6 +1,10 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
 
+'''
+@author: KILIAN HETT
+'''
+
 from __future__ import print_function
 
 import numpy
@@ -12,7 +16,7 @@ import video
 
 
 if __name__=="__main__":
-	cam=video.create_capture(0);
+	cam=video.create_capture(1);
 	namedWindow("capture");
 	rec=(100,100);
 	while (True):

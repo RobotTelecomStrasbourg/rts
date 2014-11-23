@@ -10,37 +10,54 @@
  
 	NOTICE : Demarrer le robot sur du blanc pour la calibration des capteurs de
 		luminosité pour le suivi de ligne.
+
+	Author : Kilian Hett, Valentin Niewada
 */
 
 #define MAXPOWER -70
 #define MINPOWER -30
+
+// Constante de temporisation
 #define TEMPMIN 150
+#define TEMPEVIT 500
+
+// Constante booléenne 
 #define True 0==0
 #define Flase !True
 
+// Definition des port pour les capteurs
 #define SENSORRIGHT S3
 #define SENSORLEFT S4
+#define SENSORUS S1
+
+// Déclaration de nouveaux types
+typedef t_bool int;
+typedef t_semaphore bool;
 
 
+/*
+	Definition des variables globales
+*/
 float captR_ref=0;
 float captL_ref=0;
 float captR_value=0;
 float captL_value=0;
 
+// Puissance moteur
 int powerRight=0;
 int powerLeft=0;
 
-int pnt_dir = 0;
+// Odometrie
+int X_parcouru=0;
+int X_offset=0;
 
-void go()
-{
-	OnFwd(OUT_B,powerRight);
-	OnFwd(OUT_A,powerLeft);
-}
+// Semaphore
+t_semaphore sema_sensor=true;
+t_semaphore sema_motor=true;
 
 /*
-	Compléter ici la task pour le suivi de ligne
-*/
+	Thread 1 :  Redressement à droite
+ */
 task sensorRight()
 {
 	int accumulator=0;
@@ -50,25 +67,19 @@ task sensorRight()
 		captR_value = SensorValue(SENSORRIGHT);
 		if (captR_ref > captR_value)
 		{
-			pnt_dir = /** 0 **/;
 			powerRight = MAXPOWER;
-			powerLeft = /** 50 **/;
 		}
 		else
 		{
-			pnt_dir = /** 1 **/;
-			//PlayTone(1040,100);
 			powerRight = MINPOWER;
-			Wait(TEMPMIN);
-			//powerLeft = MAXPOWER;
 		}
-
+		Wait(TEMPMIN);
 	}
 }
 
 /* 
-	Redressement à gauche
-*/
+   Thread 2 : Redressement à gauche
+ */
 task sensorLeft()
 {
 	int accumulatori=0;
@@ -80,49 +91,120 @@ task sensorLeft()
 
 		if (captL_ref-10>captL_value)
 		{
-			//pnt_dir = 0;
 			powerLeft = MAXPOWER;
-			//powerRight = 50;
 		}
 		else
 		{
-			//pnt_dir = -1;
-			//PlayTone(1040,100);
 			powerLeft = MINPOWER;
-			Wait(TEMPMIN);
-			//powerRight = MAXPOWER;
 		}
+		Wait(TEMPMIN);
+	}
+}
+
+/*
+	Thread 3 : Odometrie 1D 
+ */
+task odometrie1D()
+{	
+	// Calcul de la distance parcouru
+	X_parcouru = ((-MotorRotationCount(MOT_DROITE)/360.0)+
+		(-MotorRotationCount(MOT_GAUCHE)/360.0))/2;
+	X = X_parcouru - X_offset;
+}
+
+/*
+	Thread 4 : Detection d'obstacle	
+*/
+task evitemment()
+{
+	int distance=/* 20 */;
+	while (true)
+	{
+		if (detection(distance)) // TODO Implémenter la detection
+		{
+			sema_sensor=true;
+		}
+		else 
+		{
+			sema_sensor=false;
+		}
+		Wait(TMPEVIT);
 	}
 }
 
 
 /*
-	Compléter ici la task pour l'odométrie 1D
+	param : int d, distance à parcourir en mm
+	
+	Fonction permettant de suivre une ligne.
+	
+	Note: Le robot doit etre correctement positionne
+	avant de lancer suivreLigne
 */
-task odometrie1D()
+void suivreLigne(int d)
 {
-	// TODO Utiliser la fonction utiliser pour la coupe et mettre des troues
-}
-
-
-void suivreLigne(int mm)
-{
-	// TODO Utiliser l'odom, avancer de X
+	X_offset=X_parcouru;
+	while (X<d)
+	{
+		if (!sema_sensor&&!sema_motor)
+		{
+			OnFwd(OUT_B,powerRight);
+			OnFwd(OUT_A,powerLeft);
+		}
+	}
 }
 
 /*
-	Fonction principale "main"
+	param : float teta, angle de rotation en degre
+	
+	Fonction permettant au robot d'effectuer une rotation.
 */
+void pivotement(float teta)
+{
+	sema_sensor=true;
+	if(rouge== 1)
+	{
+		RotateMotorEx(MOTEURS, 80, 11,100, true,true);
+	}
+	else
+	{
+		RotateMotorEx(OUT_AB, 80, 11, -100, true,true);
+	}
+	sema_sensor=false;
+}
+
+/*
+	param : int dist, distance de detection maximum cm
+
+	Fonction retournant un booleen ( vrai/faux ) indiquant 
+	la présence d'un obstacle.
+*/
+bool detection(int distance)
+{
+	return (SensorUS(SENSORUS)<distance);
+}
+
+/*
+   Fonction principale "main"
+
+	Le programme commence ici
+ */
 task main()
 {
+	// Configuration des différents capteurs
 	SetSensorLight(SENSORRIGHT);
 	SetSensorLight(SENSORLEFT);
+	SetSensorLowspeed(SENSORUS);
 
+	// Lancement des différents threads
 	start sensorRight;
 	start sensorLeft;
+	start evitemment;
+	start odometrie1D;
 
 	while(1==1)
 	{
-		go();
+		// TODO Implémenter le code pour faire les différentes
+		// actions attendu
 	}
 }
