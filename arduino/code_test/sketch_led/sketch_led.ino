@@ -1,5 +1,6 @@
 #include <Wire.h>
 
+
 #define I2C_ADDRESS 0x10
 
 int led = 7;
@@ -45,7 +46,7 @@ void sendData()
 void loop()
 {
   
-  if (i2c_data==1)
+  if (i2c_data==11)
   {
     dtime = 1000;
   }
