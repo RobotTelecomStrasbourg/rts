@@ -3,21 +3,26 @@
 
 import sys
 sys.path.append("../lib");
-from libi2c import I2C
+#from libdevice import Arduino
+import libdevice
 
-import smbus
 import time
 
 
 def main(addr, value):
-	arduino = I2C(addr);
+	arduino=libdevice.Arduino(addr);
+	arduino.pushValue(0,100);	
+	
+'''	arduino = I2C(addr);
 	arduino.writeU8(value);
 	print " -- Envoie de la valeur ", value;
 	time.sleep(1);
 	receive = arduino.readU8();
 	print " -- Reponse de l'arduino ", receive;
+'''
+
 
 if __name__=="__main__":
-	addr = 0x12;
+	addr = 0x10;
 	main(addr, 6);
 
