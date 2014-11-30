@@ -1,7 +1,6 @@
 #ifndef LIBRASPBERRY
 #define LIBRASPBERRY
 
-#include "Wire.h"
 
 // Type de requete
 #define TYPE_PUSH 11
@@ -29,7 +28,7 @@ class Raspberry
     void operator() ();
 };
 
-void initRaspberry(Raspberry raspberry);
+//void initRaspberry(Raspberry raspberry);
 
 
 

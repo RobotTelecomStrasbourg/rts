@@ -1,4 +1,5 @@
 
+#include <Wire.h>
 
 #include "libraspberry.h"
 
@@ -12,11 +13,16 @@ void setup()
   // Configuration de la led
   pinMode(led, OUTPUT);
   
-  initRaspberry(raspb);
+  
   
   // Configuration de la communication Raspberry<->Arduino
   raspb.setValue(0, 100);
   raspb.setValue(1, 100);
+  
+  
+  Wire.begin(address);
+  Wire.onReceive((void(*)(int))&raspb);
+  Wire.onRequest((void(*)())&raspb);
 }
 
 void loop()

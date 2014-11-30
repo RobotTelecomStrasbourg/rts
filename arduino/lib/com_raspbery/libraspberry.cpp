@@ -25,7 +25,8 @@ void Raspberry::setValue(int index, int value)
 
 void Raspberry::operator()(int byteCount)
 {
-  if (Wire.available())
+  this->setValue(0,2000);
+  /*if (Wire.available())
   {
     int type = Wire.read();
   
@@ -41,7 +42,7 @@ void Raspberry::operator()(int byteCount)
   else
   {
     this->setValue(1,500);
-  }
+  }*/
 }
 
 void Raspberry::operator()()
@@ -54,11 +55,12 @@ int Raspberry::getMyAddress()
   return this->myAddress;
 }
 
+/*
 void initRaspberry(Raspberry raspberry)
 {
   Wire.begin(raspberry.getMyAddress());
   Wire.onReceive((void(*)(int))&raspberry);
   Wire.onRequest((void(*)())&raspberry);
 }
-
+*/
 
