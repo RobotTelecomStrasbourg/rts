@@ -1,66 +1,73 @@
 #include "libraspberry.h"
 
-
-Raspberry::Raspberry(int address, int sizeReg)
-{
+RaspberryCom::RaspberryCom(int address, int sizeReg)
+{ 
   this->registre=new int[sizeReg];
   this->sizeReg = sizeReg;
   this->myAddress = address;
 }
 
-Raspberry::~Raspberry()
+
+RaspberryCom::~RaspberryCom()
 {
   delete[] this->registre;
 }
 
-int Raspberry::getValue(int index)
+int RaspberryCom::getValue(int index)
 {
   return this->registre[index];
 }
 
-void Raspberry::setValue(int index, int value)
+void RaspberryCom::setValue(int index, int value)
 {
   this->registre[index] = value;
 }
 
-void Raspberry::operator()(int byteCount)
-{
-  this->setValue(0,2000);
-  /*if (Wire.available())
-  {
-    int type = Wire.read();
-  
-    if (type==TYPE_PUSH)
-    {
-      this->setValue(0,500);
-    }
-    else 
-    {
-      this->setValue(1,200);
-    }
-  }
-  else
-  {
-    this->setValue(1,500);
-  }*/
-}
-
-void Raspberry::operator()()
-{
-  // TODO
-}
-
-int Raspberry::getMyAddress()
+int RaspberryCom::getMyAddress()
 {
   return this->myAddress;
 }
 
-/*
-void initRaspberry(Raspberry raspberry)
+
+
+// 
+//
+//
+void onreceive(int bc)
 {
-  Wire.begin(raspberry.getMyAddress());
-  Wire.onReceive((void(*)(int))&raspberry);
-  Wire.onRequest((void(*)())&raspberry);
+  Serial.println("Communication entrante");
+  if (Wire.available())
+  {
+    int type=Wire.read();
+    if (type==TYPE_PUSH)
+    {
+      Raspberry->setValue(0,100);
+    }
+    else
+    {
+      Raspberry->setValue(0,0);
+    }
+    
+  }
+  else
+  {
+    Raspberry->setValue(1,1000);
+  }
 }
-*/
+
+void onrequest()
+{
+  // TODO Coder la reponse du arduino <--> Raspberry
+}  
+  
+void initCommunication(RaspberryCom* raspberry)
+{
+  Raspberry = raspberry;
+  
+  Serial.begin(9600);
+  Wire.begin(Raspberry->getMyAddress());
+  Wire.onReceive(onreceive);
+  Wire.onRequest(onrequest);
+}
+RaspberryCom* Raspberry = 0;
 

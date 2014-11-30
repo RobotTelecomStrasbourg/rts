@@ -1,6 +1,8 @@
 #ifndef LIBRASPBERRY
 #define LIBRASPBERRY
 
+#include "Arduino.h"
+#include <Wire.h>
 
 // Type de requete
 #define TYPE_PUSH 11
@@ -10,17 +12,15 @@
 #define FLAG_LOCKED 1
 #define FLAG_UNLOCKED 2
 
-
-
-class Raspberry
+class RaspberryCom
 {
   private:
     int myAddress;
     int sizeReg;
     int * registre; 
   public:
-    Raspberry(int address, int sizeReg);
-    ~Raspberry();
+    RaspberryCom(int address, int sizeReg);
+    ~RaspberryCom();
     int getMyAddress();
     int getValue(int index);
     void setValue(int index, int value);
@@ -28,8 +28,13 @@ class Raspberry
     void operator() ();
 };
 
-//void initRaspberry(Raspberry raspberry);
 
+// Variable global et fonction d'initialisation des communications
+// Raspberry <--> Arduino
+extern RaspberryCom* Raspberry;
+void onreceive(int);
+void onrequest();
+void initCommunication(RaspberryCom* raspb);
 
 
 #endif
