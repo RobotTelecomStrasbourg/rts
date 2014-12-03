@@ -48,6 +48,12 @@ class I2C:
 			print "Error : read data";
 			return 0x0;
 
+	def writeBlock(self, value):
+		try:
+			self._bus.write_block_data(self._addr, value);
+		except IOError, err:
+			print "Error : write block";
+
 	def writeBlockReg(self, reg, b):
 		try:
 			self._bus.write_block_data(self._addr, reg, b);
