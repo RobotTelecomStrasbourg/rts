@@ -11,7 +11,7 @@ import time
 
 def main(addr, value):
 	arduino=libdevice.Arduino(addr);
-	arduino.pushValue(0,100);	
+	arduino.pushValue(0,1000);	
 	
 '''	arduino = I2C(addr);
 	arduino.writeU8(value);
