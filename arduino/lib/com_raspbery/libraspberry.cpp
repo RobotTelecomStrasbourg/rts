@@ -36,22 +36,48 @@ int RaspberryCom::getMyAddress()
 void onreceive(int bc)
 {
   Serial.println("Communication entrante");
+  //Serial.print("Nombre d'octet en entré = ");
+  Serial.println(bc);
+  
+  /*
+  while (Wire.available())
+  {
+    Serial.println(Wire.read());
+  }
+  */
   if (Wire.available())
   {
+    int reg = Wire.read();
+    int Nbyte = Wire.read();
     int type=Wire.read();
+    
     if (type==TYPE_PUSH)
     {
-      Raspberry->setValue(0,100);
+      int flag = Wire.read();
+      
+      int v = 0; int tmp;
+      for (int i=0;i<4;i++)
+      {
+        tmp = Wire.read();
+        v = v | (tmp << (i*8));
+      }
+      if (flag==FLAG_LOCKED)
+      {
+        // TODO Gerer le processus bloquant
+      }
+      Serial.println(reg);
+      Serial.println(v);
+      Raspberry->setValue(reg,v);
     }
     else
     {
-      Raspberry->setValue(0,0);
+      Serial.println("Type PULL RECONNU");
+      // TODO Envoyer la value
     }
-    
   }
   else
   {
-    Raspberry->setValue(1,1000);
+    // ERREUR DE TRANSMISSION
   }
 }
 

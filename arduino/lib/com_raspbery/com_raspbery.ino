@@ -13,7 +13,6 @@ void setup()
   // Configuration de la led
   pinMode(led, OUTPUT);
   
-  
   // Configuration de la communication Raspberry<->Arduino
   // initCommunication Obligatoire !  
   initCommunication(new RaspberryCom(address, 2));
