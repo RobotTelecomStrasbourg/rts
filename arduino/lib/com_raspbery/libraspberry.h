@@ -12,9 +12,21 @@
 #define FLAG_LOCKED 1
 #define FLAG_UNLOCKED 2
 
+// Definition de l'etat d'execution
+#define FLAG_WAITING 110
+#define FLAG_RUNNING 111
+#define FLAG_FINISH 112
+#define FLAG_NEUTRAL 113
+
+
+
 class RaspberryCom
 {
   private:
+    int reg_last_pull;
+    int last_type;
+    int flag_run;
+    int flag_mode;
     int myAddress;
     int sizeReg;
     int * registre; 
@@ -24,8 +36,13 @@ class RaspberryCom
     int getMyAddress();
     int getValue(int index);
     void setValue(int index, int value);
-    void operator() (int byteCount);
-    void operator() ();
+    void setMode(int flag);
+    void setRun(int flag);
+    void waitRequest();
+    void waitRequest(void (*fun)() );
+    
+    friend void onreceive(int);
+    friend void onrequest();
 };
 
 
