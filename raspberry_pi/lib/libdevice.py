@@ -28,11 +28,10 @@ class Arduino:
 	def pullValue(self, reg):
 		if type(reg) is not int:
 			raise TypeError("The register address must be an interger");
-		self.arduino.writeU8(TYPE_PULL);
-		self.arduino.writeU8(reg);
+		self.arduino.writeU8Reg(reg, self.TYPE_PULL);
 		value=0;
 		for i in range(4):
-			value=value|(self.arduino.readU8()<<(i*8));
+			value=value|((self.arduino.readU8()<<(i*8)) & 0xFF);
 		return value;
 
 
