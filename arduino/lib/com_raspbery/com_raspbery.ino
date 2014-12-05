@@ -12,6 +12,7 @@ void setup()
 {
   // Configuration de la led
   pinMode(led, OUTPUT);
+  Serial.begin(9600);
   
   // Configuration de la communication Raspberry<->Arduino
   // initCommunication Obligatoire !  
@@ -21,10 +22,19 @@ void setup()
 }
 
 
+void function()
+{
+   Serial.println("RUN ! ");
+}
 
 
 void loop()
 {
+  if (k==0)
+  {
+    Raspberry->waitRequest(function);
+    k=1;
+  }
   
   //Serial.println(raspberry->getValue(0));
   digitalWrite(led, HIGH);

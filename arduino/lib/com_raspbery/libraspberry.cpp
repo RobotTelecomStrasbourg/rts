@@ -7,6 +7,7 @@ RaspberryCom::RaspberryCom(int address, int sizeReg)
   this->myAddress = address;
   this->flag_mode = FLAG_UNLOCKED;
   this->flag_run = FLAG_NEUTRAL;
+  this->compteur_pull=0;
 }
 
 
@@ -63,7 +64,7 @@ void RaspberryCom::waitRequest(void(*fun)())
 //  La fonction initCommunication est la seul fonction a utiliser ! 
 void onreceive(int bc)
 {
-  Serial.println("Communication entrante"); 
+  //Serial.println("Communication entrante"); 
 
   if (Wire.available())
   {
@@ -71,6 +72,7 @@ void onreceive(int bc)
     int Nbyte = Wire.read();
     int type=Wire.read();
     Raspberry->last_type = type;
+    //Serial.println(type);
     
     if (type==TYPE_PUSH)
     {
@@ -83,8 +85,8 @@ void onreceive(int bc)
         v = v | (tmp << (i*8));
       }
       
-      Serial.println(reg);
-      Serial.println(v);
+      //Serial.println(reg);
+      //Serial.println(v);
       Raspberry->setMode(flag);
       Raspberry->setValue(reg,v);
       
@@ -92,7 +94,7 @@ void onreceive(int bc)
     }
     else if (type==TYPE_PULL)
     {
-      Serial.println("Type PULL RECONNU");
+      //Serial.println("Type PULL RECONNU");
       Raspberry->reg_last_pull = reg;
     }
   }
@@ -100,16 +102,12 @@ void onreceive(int bc)
 
 void onrequest()
 {
-  // TODO Coder la reponse du arduino <--> Raspberry
- 
   if (Raspberry->last_type==TYPE_PULL)
   {
-    Serial.println("Request :: TYPE_PULL");
-    int v = Raspberry->getValue(Raspberry->reg_last_pull);
-    for (int i=0;i<4;i++)
-    {
-    //  Wire.write((v>>(i*8)&0xFF));
-    }
+    //Serial.println("Envoie des donnes  ");
+    Wire.write((Raspberry->getValue(Raspberry->reg_last_pull)
+      >>(Raspberry->compteur_pull*8))&0xFF);
+    Raspberry->compteur_pull= (Raspberry->compteur_pull + 1) % 4;
   }
   else if (Raspberry->flag_mode==FLAG_LOCKED)
   {
@@ -121,8 +119,7 @@ void onrequest()
 void initCommunication(RaspberryCom* raspberry)
 {
   Raspberry = raspberry;
-  
-  Serial.begin(9600);
+ 
   Wire.begin(Raspberry->getMyAddress());
   Wire.onReceive(onreceive);
   Wire.onRequest(onrequest);

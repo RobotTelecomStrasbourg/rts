@@ -23,6 +23,7 @@
 class RaspberryCom
 {
   private:
+    int compteur_pull;
     int reg_last_pull;
     int last_type;
     int flag_run;
