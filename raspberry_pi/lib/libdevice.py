@@ -9,8 +9,9 @@ class Arduino:
 	UNLOCKED=1;
 	TYPE_PUSH=11;
 	TYPE_PULL=12;
-	def __init__(self, addr):
+	def __init__(self, addr, latence=0):
 		self.arduino=I2C(addr);
+		self.latence=latence;
 	def pushValue(self, reg, value, flag=LOCKED):
 		if type(value) is not int:
 			raise TypeError("The value must be an integer");
@@ -21,6 +22,9 @@ class Arduino:
 			v = (value >> (i*8)) & 0xFF;
 			datastream.append(v);
 		self.arduino.writeBlockReg(reg, datastream);
+		# Temps de latence mettre la ltence > 0 lorsque l'on fait des print
+		# au niveau de l'arduino
+		time.sleep(self.latence);
 		if (flag):
 			return self.arduino.readU8();
 		else:
@@ -28,10 +32,13 @@ class Arduino:
 	def pullValue(self, reg):
 		if type(reg) is not int:
 			raise TypeError("The register address must be an interger");
-		self.arduino.writeU8Reg(reg, self.TYPE_PULL);
+		self.arduino.writeBlockReg(reg, [self.TYPE_PULL]);
+		#time.sleep(0.5);
 		value=0;
 		for i in range(4):
-			value=value|((self.arduino.readU8()<<(i*8)) & 0xFF);
+			time.sleep(self.latence);
+			Vbyte = self.arduino.readU8();
+			value = value | (Vbyte<<(i*8));
 		return value;
 
 
