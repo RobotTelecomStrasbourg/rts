@@ -16,6 +16,8 @@ def main(addr, value):
 	#time.sleep(1);
 	v = arduino.pullValue(0);
 	print v;
+
+
 '''	arduino = I2C(addr);
 	arduino.writeU8(value);
 	print " -- Envoie de la valeur ", value;
