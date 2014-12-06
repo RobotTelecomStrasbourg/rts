@@ -47,7 +47,7 @@ while (GPIO.input(23)==0):
 
 print ("Le port GPIO23 est passé à 1");
 
-
+# trolololololololololololoololololololloollolollololololol
 # A faire à chaque fin de programme
 GPIO.cleanup();
 
