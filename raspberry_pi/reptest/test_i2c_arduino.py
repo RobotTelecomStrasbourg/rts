@@ -13,7 +13,6 @@ def main(addr, value):
 	arduino=libdevice.Arduino(addr);
 	arduino.pushValue(1,1000);	
 
-	#time.sleep(1);
 	v = arduino.pullValue(0);
 	print v;
 
